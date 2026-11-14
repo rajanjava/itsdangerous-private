@@ -22,3 +22,11 @@ class TestURLSafeTimedSerializer(TestURLSafeSerializer, TestTimedSerializer):
     @pytest.fixture()
     def serializer_factory(self):
         return partial(URLSafeTimedSerializer, secret_key="secret-key")
+
+
+def test_urlsafe_serializer_rejects_unexpected_kwargs():
+    serializer = URLSafeSerializer("SECRET")
+    signed = serializer.dumps("value")
+    with pytest.raises(TypeError, match="unexpected keyword argument"):
+        serializer.loads(signed, max_age=10)
+

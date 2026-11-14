@@ -331,6 +331,13 @@ class Serializer(t.Generic[_TSerialized]):
         """Reverse of :meth:`dumps`. Raises :exc:`.BadSignature` if the
         signature validation fails.
         """
+        if kwargs:
+            unexpected = next(iter(kwargs))
+            raise TypeError(
+                f"{type(self).__name__}.loads() got an unexpected"
+                f" keyword argument {unexpected!r}"
+            )
+
         s = want_bytes(s)
         last_exception = None
 
