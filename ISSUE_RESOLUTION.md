@@ -55,6 +55,11 @@ tests/test_itsdangerous/test_url_safe.py:30: Failed
 
 ---
 
+## Solution Approach
+1. **Fail-Fast Security Principle:** Silently ignoring unexpected keyword arguments like `max_age` on `URLSafeSerializer.loads()` creates a dangerous security pitfall where developers believe signature expiration is enforced when it is not.
+2. **Strict Signature Validation:** Instead of accepting and discarding arbitrary `**kwargs` in `Serializer.loads()`, enforce strict argument forwarding so unsupported kwargs (such as `max_age` on non-timed serializers) immediately raise a `TypeError` rather than being swallowed.
+3. **TDD & Regression Safety:** Reproduced the silent-ignore bug with a failing test in `tests/test_itsdangerous/test_url_safe.py` and verified timed serializers (`URLSafeTimedSerializer`) continue accepting `max_age` cleanly.
+
 ## 💡 Solution
 
 Updated `Serializer.loads` in `src/itsdangerous/serializer.py` to raise a descriptive `TypeError` when unexpected keyword arguments are passed:
